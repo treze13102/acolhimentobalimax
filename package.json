@@ -1,0 +1,19 @@
+{
+  "name": "canal-acolhimento",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Canal de acolhimento, saúde mental e riscos psicossociais — Balimax Engenharia",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "node --watch dev.js",
+    "start": "node dev.js",
+    "chave": "node scripts/gerar-chave.js",
+    "admin": "node scripts/criar-admin.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0"
+  }
+}

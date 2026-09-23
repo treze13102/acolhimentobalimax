@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Nova senha — Painel</title>
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/painel/css/painel.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🔒</text></svg>">
+</head>
+<body class="painel">
+<div class="tela-login">
+  <form class="cartao-login" id="form">
+    <span class="selo">Acesso restrito</span>
+    <h1>Defina sua nova senha</h1>
+    <p class="apoio" id="ajuda">Escolha uma senha com pelo menos 10 caracteres.</p>
+
+    <div id="campos">
+      <div class="campo">
+        <label for="nova">Nova senha</label>
+        <input type="password" id="nova" autocomplete="new-password" required minlength="10">
+      </div>
+      <div class="campo">
+        <label for="conf">Repita a nova senha</label>
+        <input type="password" id="conf" autocomplete="new-password" required minlength="10">
+      </div>
+      <div style="margin-top:20px">
+        <button class="botao primario" type="submit" style="width:100%">Salvar senha</button>
+      </div>
+    </div>
+
+    <div class="erro" id="erro" hidden role="alert"></div>
+    <p class="apoio" style="margin-top:16px; text-align:center">
+      <a href="/painel/">Voltar ao painel</a>
+    </p>
+  </form>
+</div>
+
+<script src="/js/tema.js"></script>
+<script src="/painel/js/auth.js"></script>
+<script src="/painel/js/nova-senha.js"></script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Acompanhar contato</title>
+<link rel="stylesheet" href="/css/base.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>💛</text></svg>">
+</head>
+<body>
+<div class="barra">
+  <div class="container">
+    <span class="marca"><span class="ponto" aria-hidden="true"></span> Canal de Acolhimento</span>
+    <span class="espaco"></span>
+    <a class="btn-socorro" href="/#socorro">Preciso de ajuda agora</a>
+    <button class="btn-icone" id="btn-tema" type="button" aria-label="Alternar tema claro e escuro">◐</button>
+  </div>
+</div>
+
+<main class="container">
+  <header class="capa">
+    <span class="selo">Acompanhamento</span>
+    <h1>Acompanhe o seu contato.</h1>
+    <p class="intro">Informe o número de protocolo recebido ao enviar seu contato. Ele funciona mesmo para envios anônimos.</p>
+  </header>
+
+  <section class="secao">
+    <form id="busca">
+      <div class="campo">
+        <label for="codigo">Número de protocolo</label>
+        <input type="text" id="codigo" name="codigo" placeholder="BLX-XXXX-XXXX"
+               autocomplete="off" spellcheck="false"
+               style="font-family:ui-monospace,Consolas,monospace; letter-spacing:.08em; text-transform:uppercase">
+      </div>
+      <div style="margin-top:16px">
+        <button class="botao primario" type="submit">Consultar</button>
+        <a class="botao secundario" href="/">Voltar ao formulário</a>
+      </div>
+    </form>
+    <div class="erro" id="erro" hidden role="alert"></div>
+  </section>
+
+  <section class="secao" id="resultado" hidden aria-live="polite">
+    <h2>Situação do seu contato</h2>
+    <p class="apoio" id="linha-status"></p>
+    <div id="mensagens"></div>
+    <div class="destaque" id="sem-mensagens" hidden>
+      Ainda não há mensagens da equipe. Assim que houver retorno, ele aparecerá aqui.
+    </div>
+  </section>
+
+  <section class="secao info">
+    <h2>🆘 Se precisar de ajuda agora</h2>
+    <div class="linhas" style="margin-top:14px">
+      <a class="linha" href="tel:188"><b>188</b> CVV — apoio emocional 24h</a>
+      <a class="linha" href="tel:192"><b>192</b> SAMU — emergência</a>
+    </div>
+  </section>
+</main>
+
+<footer class="rodape">
+  <p class="empresa">Balimax Engenharia</p>
+  <p>Segurança, respeito e cuidado com as pessoas.</p>
+</footer>
+
+<script src="/js/tema.js"></script>
+<script src="/js/protocolo.js"></script>
+</body>
+</html>

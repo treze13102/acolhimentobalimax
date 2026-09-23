@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Painel — Canal de Acolhimento</title>
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/painel/css/painel.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🔒</text></svg>">
+</head>
+<body class="painel">
+
+<!-- ======================= LOGIN ======================= -->
+<div class="tela-login" id="tela-login">
+  <form class="cartao-login" id="form-login">
+    <span class="selo">Acesso restrito</span>
+    <h1>Painel de acolhimento</h1>
+    <p class="apoio">Uso exclusivo da equipe responsável. Todo acesso a um relato é registrado.</p>
+
+    <div class="campo">
+      <label for="email">E-mail corporativo</label>
+      <input type="email" id="email" autocomplete="username" required>
+    </div>
+    <div class="campo">
+      <label for="senha">Senha</label>
+      <input type="password" id="senha" autocomplete="current-password" required>
+    </div>
+    <div style="margin-top:20px">
+      <button class="botao primario" type="submit" style="width:100%">Entrar</button>
+    </div>
+    <p class="apoio" style="margin-top:14px; text-align:center">
+      <a href="#" id="link-esqueci">Esqueci minha senha</a>
+    </p>
+    <div class="erro" id="erro-login" hidden role="alert"></div>
+  </form>
+</div>
+
+<!-- ======================= TROCA DE SENHA ======================= -->
+<div class="tela-login" id="tela-senha" hidden>
+  <form class="cartao-login" id="form-senha">
+    <h1>Defina uma nova senha</h1>
+    <p class="apoio">Sua senha atual é provisória. Escolha uma senha com pelo menos 10 caracteres antes de continuar.</p>
+    <div class="campo">
+      <label for="senha-nova">Nova senha</label>
+      <input type="password" id="senha-nova" autocomplete="new-password" required minlength="10">
+    </div>
+    <div class="campo">
+      <label for="senha-conf">Repita a nova senha</label>
+      <input type="password" id="senha-conf" autocomplete="new-password" required minlength="10">
+    </div>
+    <div style="margin-top:20px">
+      <button class="botao primario" type="submit" style="width:100%">Salvar e continuar</button>
+    </div>
+    <div class="erro" id="erro-senha" hidden role="alert"></div>
+  </form>
+</div>
+
+<!-- ======================= APLICAÇÃO ======================= -->
+<div id="app" hidden>
+  <div class="topo">
+    <div class="topo-interno">
+      <span class="marca"><span class="ponto" aria-hidden="true"></span> Acolhimento</span>
+      <nav class="abas" role="tablist">
+        <button class="aba" role="tab" data-aba="registros" aria-selected="true">Registros</button>
+        <button class="aba" role="tab" data-aba="indicadores" aria-selected="false">Indicadores</button>
+        <button class="aba" role="tab" data-aba="usuarios" aria-selected="false">Equipe</button>
+        <button class="aba" role="tab" data-aba="auditoria" aria-selected="false" hidden>Auditoria</button>
+      </nav>
+      <span class="quem"><strong id="meu-nome"></strong><span id="meu-papel"></span></span>
+      <button class="btn-icone" id="btn-tema" type="button" aria-label="Alternar tema">◐</button>
+      <button class="botao secundario pequeno" id="btn-sair" type="button">Sair</button>
+    </div>
+  </div>
+
+  <main class="pagina">
+    <!-- ---------- Registros ---------- -->
+    <section id="painel-registros">
+      <div class="metricas" id="metricas"></div>
+
+      <div class="filtros">
+        <button class="chip" data-status="abertos" aria-pressed="true">Em aberto</button>
+        <button class="chip" data-status="novo" aria-pressed="false">Novos</button>
+        <button class="chip" data-status="em_acolhimento" aria-pressed="false">Em acolhimento</button>
+        <button class="chip" data-status="encaminhado" aria-pressed="false">Encaminhados</button>
+        <button class="chip" data-status="concluido" aria-pressed="false">Concluídos</button>
+        <button class="chip" data-status="" aria-pressed="false">Todos</button>
+        <input type="text" id="busca-protocolo" placeholder="Buscar protocolo…" aria-label="Buscar por protocolo">
+      </div>
+
+      <div class="lista" id="lista"></div>
+    </section>
+
+    <!-- ---------- Indicadores ---------- -->
+    <section id="painel-indicadores" hidden>
+      <div class="metricas" id="metricas-2"></div>
+      <div class="secao">
+        <h2>Motivos mais registrados</h2>
+        <p class="apoio">Base para o inventário de riscos psicossociais e para o PGR. Números agregados — nenhum relato individual é exposto aqui.</p>
+        <div id="grafico-motivos" style="margin-top:18px"></div>
+      </div>
+    </section>
+
+    <!-- ---------- Equipe ---------- -->
+    <section id="painel-usuarios" hidden>
+      <div class="secao" id="caixa-novo-usuario" hidden>
+        <h2>Adicionar pessoa à equipe de acolhimento</h2>
+        <p class="apoio">A pessoa recebe uma senha provisória, exibida uma única vez, e deve trocá-la no primeiro acesso.</p>
+        <form id="form-usuario" style="margin-top:16px">
+          <div class="grade-2">
+            <div class="campo" style="margin:0"><label for="u-nome">Nome</label><input type="text" id="u-nome" required></div>
+            <div class="campo" style="margin:0"><label for="u-email">E-mail</label><input type="email" id="u-email" required></div>
+            <div class="campo" style="margin:0">
+              <label for="u-papel">Perfil</label>
+              <select id="u-papel">
+                <option value="acolhimento">Acolhimento — atende registros</option>
+                <option value="admin">Administrador — também gere a equipe</option>
+              </select>
+            </div>
+          </div>
+          <div style="margin-top:16px"><button class="botao primario" type="submit">Criar acesso</button></div>
+          <div class="erro" id="erro-usuario" hidden role="alert"></div>
+          <div class="destaque" id="senha-gerada" hidden></div>
+        </form>
+      </div>
+
+      <div class="tabela-caixa" style="margin-top:18px">
+        <table>
+          <thead><tr><th>Nome</th><th>E-mail</th><th>Perfil</th><th>Último acesso</th><th>Situação</th><th></th></tr></thead>
+          <tbody id="tabela-usuarios"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ---------- Auditoria ---------- -->
+    <section id="painel-auditoria" hidden>
+      <div class="secao" style="margin-top:0">
+        <h2>Registro de acessos</h2>
+        <p class="apoio">Cada abertura de relato, alteração de status e login fica registrada. IPs são guardados apenas como impressão criptográfica.</p>
+      </div>
+      <div class="tabela-caixa" style="margin-top:16px">
+        <table>
+          <thead><tr><th>Quando</th><th>Quem</th><th>Ação</th><th>Detalhe</th></tr></thead>
+          <tbody id="tabela-auditoria"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- ======================= GAVETA DE DETALHE ======================= -->
+<div class="fundo" id="fundo" hidden></div>
+<aside class="gaveta" id="gaveta" hidden role="dialog" aria-modal="true" aria-label="Detalhe do registro"></aside>
+
+<script src="/js/tema.js"></script>
+<script src="/painel/js/auth.js"></script>
+<script src="/painel/js/painel.js"></script>
+</body>
+</html>

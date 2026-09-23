@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Canal de Acolhimento</title>
+<link rel="stylesheet" href="/css/base.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>💛</text></svg>">
+</head>
+<body>
+<a class="pular" href="#formulario">Ir direto para o formulário</a>
+
+<div class="barra">
+  <div class="container">
+    <span class="marca"><span class="ponto" aria-hidden="true"></span> Canal de Acolhimento</span>
+    <span class="espaco"></span>
+    <a class="btn-socorro" href="#socorro">Preciso de ajuda agora</a>
+    <button class="btn-icone" id="btn-tema" type="button" aria-label="Alternar tema claro e escuro">◐</button>
+  </div>
+</div>
+
+<main class="container" id="conteudo">
+
+  <header class="capa">
+    <span class="selo">Saúde mental e riscos psicossociais</span>
+    <h1>Você não precisa esperar chegar ao seu limite para pedir ajuda.</h1>
+    <p class="intro">Este é um espaço de acolhimento, escuta e apoio para os colaboradores da <strong id="empresa">Balimax Engenharia</strong>.</p>
+    <p class="intro">Use este canal para falar sobre algo que esteja afetando sua saúde emocional, comunicar uma situação de risco psicossocial no trabalho, ou pedir ajuda para você ou para um colega.</p>
+    <p class="intro discreto">Você pode se identificar ou permanecer anônimo. Ao final você recebe um número de protocolo para acompanhar o andamento — inclusive sem se identificar.</p>
+  </header>
+
+  <!-- ===================== FORMULÁRIO ===================== -->
+  <form id="formulario" autocomplete="off">
+
+    <section class="secao">
+      <fieldset>
+        <legend><h2><span class="passo" aria-hidden="true">1</span> Você deseja se identificar?</h2></legend>
+        <div class="opcoes colunas">
+          <label class="opcao"><input type="radio" name="identificar" value="Sim"> Sim, quero me identificar</label>
+          <label class="opcao"><input type="radio" name="identificar" value="Não" checked> Não, prefiro o anonimato</label>
+        </div>
+      </fieldset>
+      <div id="bloco-identificacao" hidden>
+        <div class="campo">
+          <label for="nome">Nome completo <span class="opcional">— opcional</span></label>
+          <input type="text" id="nome" name="nome">
+        </div>
+        <div class="campo">
+          <label for="setor">Setor / Função <span class="opcional">— opcional</span></label>
+          <input type="text" id="setor" name="setor">
+        </div>
+      </div>
+    </section>
+
+    <section class="secao">
+      <fieldset>
+        <legend><h2><span class="passo" aria-hidden="true">2</span> O que motivou seu contato?</h2></legend>
+        <p class="apoio">Você pode selecionar mais de uma opção.</p>
+        <div class="opcoes" id="motivos"></div>
+      </fieldset>
+
+      <div class="risco" id="alerta-risco" hidden role="alert">
+        <h3>Se você estiver em risco agora, não espere o retorno deste formulário.</h3>
+        <p>Procure já uma pessoa de confiança ou um serviço de saúde. Você pode ligar de qualquer telefone, a qualquer hora, de graça.</p>
+        <div class="linhas">
+          <a class="linha" href="tel:188"><b>188</b> CVV — apoio emocional 24h</a>
+          <a class="linha" href="tel:192"><b>192</b> SAMU — emergência</a>
+        </div>
+      </div>
+
+      <div class="campo" id="campo-outro" hidden>
+        <label for="outro">Descreva o outro motivo</label>
+        <input type="text" id="outro" name="outro">
+      </div>
+    </section>
+
+    <section class="secao">
+      <h2><span class="passo" aria-hidden="true">3</span> Conte o que está acontecendo</h2>
+      <p class="apoio">Com suas palavras. Não é necessário informar nada que você não se sinta confortável em contar — o que você conseguir escrever já é suficiente para começarmos.</p>
+      <textarea id="relato" name="relato" aria-label="Relato" placeholder="Escreva aqui…"></textarea>
+    </section>
+
+    <section class="secao">
+      <fieldset>
+        <legend><h2><span class="passo" aria-hidden="true">4</span> Você precisa de acolhimento imediato?</h2></legend>
+        <div class="opcoes colunas">
+          <label class="opcao sensivel"><input type="radio" name="imediato" value="Sim"> Sim</label>
+          <label class="opcao"><input type="radio" name="imediato" value="Não"> Não</label>
+          <label class="opcao"><input type="radio" name="imediato" value="Não tenho certeza"> Não tenho certeza</label>
+        </div>
+      </fieldset>
+    </section>
+
+    <section class="secao">
+      <fieldset>
+        <legend><h2><span class="passo" aria-hidden="true">5</span> Esta situação envolve outra pessoa?</h2></legend>
+        <div class="opcoes colunas">
+          <label class="opcao"><input type="radio" name="envolve" value="Sim"> Sim</label>
+          <label class="opcao"><input type="radio" name="envolve" value="Não"> Não</label>
+          <label class="opcao"><input type="radio" name="envolve" value="Prefiro não informar"> Prefiro não informar</label>
+        </div>
+      </fieldset>
+      <div class="campo" id="campo-envolvido" hidden>
+        <label for="envolvido">Nome ou setor da pessoa envolvida <span class="opcional">— opcional</span></label>
+        <input type="text" id="envolvido" name="envolvido">
+      </div>
+    </section>
+
+    <section class="secao">
+      <fieldset>
+        <legend><h2><span class="passo" aria-hidden="true">6</span> Você gostaria que entrássemos em contato?</h2></legend>
+        <div class="opcoes colunas">
+          <label class="opcao"><input type="radio" name="contato" value="Sim"> Sim</label>
+          <label class="opcao"><input type="radio" name="contato" value="Não"> Não</label>
+        </div>
+      </fieldset>
+      <div id="bloco-contato" hidden>
+        <p class="apoio">Informe ao menos uma forma de contato. Esses dados ficam criptografados e visíveis apenas à equipe de acolhimento.</p>
+        <div class="campo">
+          <label for="telefone">Telefone / WhatsApp</label>
+          <input type="tel" id="telefone" name="telefone" inputmode="tel">
+        </div>
+        <div class="campo">
+          <label for="email">E-mail</label>
+          <input type="email" id="email" name="email">
+        </div>
+      </div>
+    </section>
+
+    <div class="acoes">
+      <button type="submit" class="botao primario" id="enviar">Enviar com segurança</button>
+      <p class="aviso">Seu relato é criptografado antes de ser guardado. Nada é publicado nem compartilhado fora da equipe de acolhimento.</p>
+    </div>
+
+    <div class="erro" id="erro" hidden role="alert"></div>
+  </form>
+
+  <!-- ===================== CONFIRMAÇÃO ===================== -->
+  <section class="secao" id="recibo" hidden aria-live="polite">
+    <h2>Recebemos o seu contato.</h2>
+    <p class="apoio">Obrigado pela confiança. Guarde o número abaixo: com ele você acompanha o andamento e lê as respostas da equipe, mesmo tendo enviado de forma anônima.</p>
+    <p style="font-size:29px; font-weight:700; letter-spacing:.06em; margin:18px 0 6px; font-family:ui-monospace,Consolas,monospace" id="protocolo">—</p>
+    <div class="linhas" style="margin-top:14px">
+      <button class="botao secundario" id="copiar-protocolo" type="button">Copiar protocolo</button>
+      <a class="botao secundario" href="/protocolo.html" id="ir-protocolo">Acompanhar agora</a>
+    </div>
+    <div class="destaque" style="margin-top:20px">Este número é a única forma de reabrir um contato anônimo. Anote em um lugar seguro — não conseguimos recuperá-lo depois.</div>
+    <p class="apoio" id="aviso-critico" hidden style="color:var(--risco)">Seu contato foi marcado como prioritário. Ainda assim, se você estiver em risco agora, ligue <strong>188 (CVV)</strong> ou <strong>192 (SAMU)</strong> sem esperar nosso retorno.</p>
+  </section>
+
+  <!-- ===================== APOIO ===================== -->
+  <section class="secao info">
+    <h2>🤝 Apoio psicológico</h2>
+    <p class="apoio">A Balimax conta com clínica credenciada para atendimento aos colaboradores — <strong>Clínica Argus</strong>, que dispõe de atendimento psicológico. Use este canal para solicitar orientação sobre o encaminhamento adequado.</p>
+    <p class="destaque">Pedir ajuda não é sinal de fraqueza. É uma atitude de cuidado.</p>
+  </section>
+
+  <section class="secao info" id="socorro">
+    <h2>🆘 Se você estiver em risco imediato</h2>
+    <p class="apoio">Se você ou outra pessoa estiver em risco imediato de se machucar ou tirar a própria vida, <strong>não aguarde o retorno deste formulário</strong>. Procure imediatamente uma pessoa de confiança ou um serviço de saúde.</p>
+    <div class="linhas" style="margin-top:16px">
+      <a class="linha" href="tel:188"><b>188</b> CVV — Centro de Valorização da Vida</a>
+      <a class="linha" href="tel:192"><b>192</b> SAMU — emergências</a>
+    </div>
+    <p class="apoio">CVV: apoio emocional e prevenção do suicídio, gratuito, 24 horas por dia.</p>
+  </section>
+
+  <section class="secao info">
+    <h2>🔒 Confidencialidade</h2>
+    <p class="apoio">As informações deste canal são tratadas com respeito, cuidado e confidencialidade, com acesso restrito às pessoas responsáveis pelo acolhimento e pelos encaminhamentos necessários. Todo acesso a um relato fica registrado.</p>
+    <p class="apoio">A opção de permanecer anônimo está disponível para quem não desejar se identificar. Este canal não substitui atendimento médico, psicológico ou serviço de emergência.</p>
+    <p class="apoio"><a href="/protocolo.html">Já tem um protocolo? Acompanhe seu contato aqui.</a></p>
+  </section>
+</main>
+
+<footer class="rodape">
+  <p class="coracao">💛 Você não está sozinho(a).</p>
+  <p>Falar sobre o que estamos sentindo também é uma forma de cuidar da nossa saúde.</p>
+  <p class="empresa">Balimax Engenharia</p>
+  <p>Segurança, respeito e cuidado com as pessoas.</p>
+</footer>
+
+<script src="/js/tema.js"></script>
+<script src="/js/form.js"></script>
+</body>
+</html>
