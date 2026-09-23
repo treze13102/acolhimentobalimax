@@ -11,7 +11,14 @@ import { ErroHttp } from './http.js';
  * de CSRF: um site de terceiros não consegue anexá-lo à requisição.
  */
 
-const cache = new Map(); // token -> { usuario, ate }
+/**
+ * Cache apenas da validação do token (chamada de rede ao Supabase Auth).
+ * O PERFIL NUNCA entra aqui: ele carrega `ativo` e `papel`, e guardá-lo faria
+ * a desativação de alguém demorar até o cache vencer. Quem é afastado da
+ * equipe precisa perder o acesso aos relatos na requisição seguinte, não
+ * meio minuto depois.
+ */
+const cacheToken = new Map(); // token -> { usuarioId, ate }
 const VALIDADE_CACHE = 30_000;
 
 function tokenDe(req) {
@@ -24,35 +31,42 @@ export async function usuarioAtual(req) {
   const token = tokenDe(req);
   if (!token) return null;
 
-  const emCache = cache.get(token);
-  if (emCache && emCache.ate > Date.now()) return emCache.usuario;
+  let usuarioId;
+  const emCache = cacheToken.get(token);
 
-  const { data, error } = await bd.auth.getUser(token);
-  if (error || !data?.user) return null;
+  if (emCache && emCache.ate > Date.now()) {
+    usuarioId = emCache.usuarioId;
+  } else {
+    const { data, error } = await bd.auth.getUser(token);
+    if (error || !data?.user) {
+      cacheToken.delete(token);
+      return null;
+    }
+    usuarioId = data.user.id;
+    if (cacheToken.size > 200) cacheToken.clear();
+    cacheToken.set(token, { usuarioId, ate: Date.now() + VALIDADE_CACHE });
+  }
 
+  // Leitura sempre fresca: é o que faz a desativação valer imediatamente.
   const { data: perfil } = await bd
     .from('perfis')
     .select('id, nome, email, papel, ativo, trocar_senha')
-    .eq('id', data.user.id)
+    .eq('id', usuarioId)
     .maybeSingle();
 
-  // Sem perfil, ou desativado, não entra — mesmo com token válido.
-  // É assim que a desativação corta o acesso antes do token expirar.
+  // Sem perfil, ou desativado, não entra — mesmo com token ainda válido.
   if (!perfil || !perfil.ativo) {
-    cache.delete(token);
+    cacheToken.delete(token);
     return null;
   }
 
-  const usuario = {
+  return {
     id: perfil.id,
     nome: perfil.nome,
     email: perfil.email,
     papel: perfil.papel,
     trocar_senha: perfil.trocar_senha,
   };
-  cache.set(token, { usuario, ate: Date.now() + VALIDADE_CACHE });
-  if (cache.size > 200) cache.clear();
-  return usuario;
 }
 
 /** Exige sessão válida; com `papel`, exige também aquele perfil. */
