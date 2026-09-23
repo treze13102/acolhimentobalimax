@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <title>Painel — Canal de Acolhimento</title>
 <link rel="stylesheet" href="/css/base.css">
@@ -79,12 +79,15 @@
       <div class="metricas" id="metricas"></div>
 
       <div class="filtros">
-        <button class="chip" data-status="abertos" aria-pressed="true">Em aberto</button>
-        <button class="chip" data-status="novo" aria-pressed="false">Novos</button>
-        <button class="chip" data-status="em_acolhimento" aria-pressed="false">Em acolhimento</button>
-        <button class="chip" data-status="encaminhado" aria-pressed="false">Encaminhados</button>
-        <button class="chip" data-status="concluido" aria-pressed="false">Concluídos</button>
-        <button class="chip" data-status="" aria-pressed="false">Todos</button>
+        <!-- No celular esta faixa rola de lado, em vez de quebrar em 3 linhas. -->
+        <div class="filtros-chips">
+          <button class="chip" data-status="abertos" aria-pressed="true">Em aberto</button>
+          <button class="chip" data-status="novo" aria-pressed="false">Novos</button>
+          <button class="chip" data-status="em_acolhimento" aria-pressed="false">Em acolhimento</button>
+          <button class="chip" data-status="encaminhado" aria-pressed="false">Encaminhados</button>
+          <button class="chip" data-status="concluido" aria-pressed="false">Concluídos</button>
+          <button class="chip" data-status="" aria-pressed="false">Todos</button>
+        </div>
         <input type="text" id="busca-protocolo" placeholder="Buscar protocolo…" aria-label="Buscar por protocolo">
       </div>
 

@@ -10,10 +10,15 @@
     concluido: 'Concluído',
   };
 
+  // O Postgres devolve ISO com fuso; o formato antigo, sem fuso, é tratado como UTC.
   function dataBR(iso) {
-    // O servidor grava em UTC ("YYYY-MM-DD HH:MM:SS").
-    var d = new Date(iso.replace(' ', 'T') + 'Z');
-    return isNaN(d) ? iso : d.toLocaleString('pt-BR');
+    if (!iso) return '—';
+    var texto = String(iso);
+    if (texto.indexOf('T') === -1 && !/[+-]\d{2}:?\d{2}$|Z$/.test(texto)) {
+      texto = texto.replace(' ', 'T') + 'Z';
+    }
+    var d = new Date(texto);
+    return isNaN(d.getTime()) ? iso : d.toLocaleString('pt-BR');
   }
 
   function mostrarErro(mensagem) {

@@ -49,10 +49,36 @@
     return n;
   }
 
+  /* Célula de tabela com rótulo. No celular a tabela vira cartão e o CSS
+     mostra este rótulo ao lado do valor — rolar tabela de lado com o
+     polegar esconde informação e é fácil de errar. */
+  function celula(rotulo, texto) {
+    var td = el('td', null, texto);
+    td.setAttribute('data-rotulo', rotulo);
+    return td;
+  }
+
+  // O Postgres devolve ISO com fuso ("2026-09-23T14:56:41.492+00:00").
+  // A versão anterior assumia o formato do SQLite e grudava um "Z" no fim,
+  // o que gerava data inválida e fazia a tela mostrar o texto cru.
   function dataBR(iso) {
     if (!iso) return '—';
-    var d = new Date(String(iso).replace(' ', 'T') + 'Z');
-    return isNaN(d) ? iso : d.toLocaleString('pt-BR');
+    var texto = String(iso);
+    // Sem fuso explícito (formato antigo do SQLite), assume UTC.
+    if (texto.indexOf('T') === -1 && !/[+-]\d{2}:?\d{2}$|Z$/.test(texto)) {
+      texto = texto.replace(' ', 'T') + 'Z';
+    }
+    var d = new Date(texto);
+    return isNaN(d.getTime()) ? iso : d.toLocaleString('pt-BR');
+  }
+
+  // Versão curta para telas pequenas: "23/09 08:56".
+  function dataCurta(iso) {
+    if (!iso) return '—';
+    var d = new Date(String(iso));
+    if (isNaN(d.getTime())) return dataBR(iso);
+    return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) +
+      ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
   }
 
   function erroEm(id, mensagem) {
@@ -291,7 +317,7 @@
         cartao.appendChild(cabeca);
         cartao.appendChild(el('div', 'resumo', resumo));
         cartao.appendChild(
-          el('div', 'data', 'Recebido em ' + dataBR(r.criado_em) +
+          el('div', 'data', 'Recebido em ' + dataCurta(r.criado_em) +
             (r.responsavel ? ' · responsável: ' + r.responsavel : ' · sem responsável'))
         );
 
@@ -488,13 +514,14 @@
 
       dados.usuarios.forEach(function (u) {
         var tr = el('tr');
-        tr.appendChild(el('td', null, u.nome));
-        tr.appendChild(el('td', null, u.email));
-        tr.appendChild(el('td', null, u.papel === 'admin' ? 'Administrador' : 'Acolhimento'));
-        tr.appendChild(el('td', null, u.ultimo_acesso ? dataBR(u.ultimo_acesso) : 'nunca acessou'));
-        tr.appendChild(el('td', null, u.ativo ? 'Ativo' : 'Desativado'));
+        tr.appendChild(celula('Nome', u.nome));
+        tr.appendChild(celula('E-mail', u.email));
+        tr.appendChild(celula('Perfil', u.papel === 'admin' ? 'Administrador' : 'Acolhimento'));
+        tr.appendChild(celula('Último acesso', u.ultimo_acesso ? dataBR(u.ultimo_acesso) : 'nunca acessou'));
+        tr.appendChild(celula('Situação', u.ativo ? 'Ativo' : 'Desativado'));
 
         var acoes = el('td');
+        acoes.setAttribute('data-rotulo', '');
         if (admin) {
           var alternar = el('button', 'botao secundario pequeno', u.ativo ? 'Desativar' : 'Reativar');
           alternar.type = 'button';
@@ -554,10 +581,10 @@
       corpo.textContent = '';
       dados.eventos.forEach(function (e) {
         var tr = el('tr');
-        tr.appendChild(el('td', null, dataBR(e.criado_em)));
-        tr.appendChild(el('td', null, e.usuario || '—'));
-        tr.appendChild(el('td', null, e.acao.replace(/_/g, ' ')));
-        tr.appendChild(el('td', null, e.detalhe || '—'));
+        tr.appendChild(celula('Quando', dataBR(e.criado_em)));
+        tr.appendChild(celula('Quem', e.usuario || '—'));
+        tr.appendChild(celula('Ação', e.acao.replace(/_/g, ' ')));
+        tr.appendChild(celula('Detalhe', e.detalhe || '—'));
         corpo.appendChild(tr);
       });
       if (!dados.eventos.length) {

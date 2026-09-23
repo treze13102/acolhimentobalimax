@@ -1,93 +1,167 @@
-/* Painel interno — reaproveita os tokens de /css/base.css */
+/* Painel interno — reaproveita os tokens de /css/base.css
+   Também mobile-first: a equipe de acolhimento precisa conseguir atender
+   um caso crítico pelo celular, sem esperar chegar a um computador. */
 
 body.painel { background: var(--bg-fundo); }
 
 /* ------------------------------------------------------------------- login */
 
 .tela-login {
-  min-height: 100dvh; display: grid; place-items: center; padding: 24px 16px;
+  min-height: 100dvh; display: grid; place-items: center;
+  padding: 20px 16px calc(20px + env(safe-area-inset-bottom));
 }
 .cartao-login {
   width: 100%; max-width: 400px; background: var(--surface);
   border: 1px solid var(--line); border-radius: var(--r-lg);
-  padding: 32px 28px; box-shadow: var(--sombra-alta);
+  padding: 26px 20px; box-shadow: var(--sombra-alta);
 }
-.cartao-login h1 { font-size: 21px; margin: 0 0 6px; max-width: none; }
-.cartao-login .apoio { margin: 0 0 22px; }
+.cartao-login h1 { font-size: 20px; margin: 0 0 6px; max-width: none; }
+.cartao-login .apoio { margin: 0 0 20px; }
+
+@media (min-width: 40em) {
+  .cartao-login { padding: 32px 28px; }
+  .cartao-login h1 { font-size: 21px; }
+}
 
 /* ------------------------------------------------------------------ layout */
 
 .topo {
   position: sticky; top: 0; z-index: 40;
-  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  background: color-mix(in srgb, var(--surface) 94%, transparent);
   backdrop-filter: blur(10px); border-bottom: 1px solid var(--line);
+  padding-top: env(safe-area-inset-top);
 }
-.topo-interno {
-  max-width: 1400px; margin: 0 auto; padding: 10px 20px;
-  display: flex; align-items: center; gap: 14px; min-height: 58px;
-}
-.topo .quem { font-size: 13px; color: var(--muted); text-align: right; line-height: 1.35; }
-.topo .quem strong { color: var(--text); display: block; font-size: 14px; }
 
-.abas { display: flex; gap: 4px; flex: 1; flex-wrap: wrap; }
+/* No celular: duas faixas — identificação/sair em cima, abas roláveis
+   embaixo. Antes tudo disputava uma linha só e estourava a tela. */
+.topo-interno {
+  max-width: 1400px; margin: 0 auto;
+  padding: 8px max(12px, env(safe-area-inset-left));
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 8px;
+}
+.topo .marca { grid-row: 1; grid-column: 1; }
+.topo .quem {
+  grid-row: 2; grid-column: 1 / -1;
+  font-size: 12px; color: var(--muted); line-height: 1.3;
+  display: flex; gap: 6px; align-items: baseline;
+}
+.topo .quem strong { color: var(--text); font-size: 13px; }
+.topo .btn-icone { grid-row: 1; grid-column: 2; }
+.topo #btn-sair { grid-row: 1; grid-column: 3; }
+
+/* Abas numa faixa que rola de lado, em vez de quebrar em várias linhas. */
+.abas {
+  grid-row: 3; grid-column: 1 / -1;
+  display: flex; gap: 6px;
+  overflow-x: auto; scrollbar-width: none;
+  margin: 0 calc(-1 * max(12px, env(safe-area-inset-left)));
+  padding: 2px max(12px, env(safe-area-inset-left)) 6px;
+  scroll-snap-type: x proximity;
+}
+.abas::-webkit-scrollbar { display: none; }
 .aba {
   background: transparent; border: 1px solid transparent; color: var(--muted);
-  padding: 8px 15px; border-radius: 999px; font-size: 14px; font-weight: 600;
+  padding: 8px 14px; border-radius: 999px; font-size: 14px; font-weight: 600;
+  white-space: nowrap; flex: none; scroll-snap-align: start; min-height: 40px;
 }
 .aba:hover { color: var(--text); background: var(--surface-2); }
 .aba[aria-selected="true"] { background: var(--accent-soft); color: var(--accent-ink); border-color: var(--accent); }
 
-.pagina { max-width: 1400px; margin: 0 auto; padding: 22px 20px 70px; }
+.pagina {
+  max-width: 1400px; margin: 0 auto;
+  padding: 16px max(14px, env(safe-area-inset-left))
+           calc(48px + env(safe-area-inset-bottom));
+}
+
+@media (min-width: 52em) {
+  .topo-interno {
+    display: flex; align-items: center; gap: 14px;
+    padding: 10px 20px; min-height: 58px;
+  }
+  .abas { flex: 1; overflow: visible; margin: 0; padding: 0; flex-wrap: wrap; }
+  .topo .quem { text-align: right; display: block; font-size: 13px; }
+  .topo .quem strong { display: block; font-size: 14px; }
+  .pagina { padding: 22px 20px 70px; }
+}
 
 /* ------------------------------------------------------------------ cartões */
 
 .metricas {
-  display: grid; gap: 12px; margin-bottom: 20px;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  display: grid; gap: 10px; margin-bottom: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
 }
 .metrica {
   background: var(--surface); border: 1px solid var(--line);
-  border-radius: var(--r-md); padding: 16px 18px;
+  border-radius: var(--r-md); padding: 14px 15px;
 }
-.metrica .valor { font-size: 29px; font-weight: 700; line-height: 1.1; letter-spacing: -.02em; }
-.metrica .rotulo { font-size: 12.5px; color: var(--muted); margin-top: 3px; }
+.metrica .valor { font-size: 26px; font-weight: 700; line-height: 1.1; letter-spacing: -.02em; }
+.metrica .rotulo { font-size: 12px; color: var(--muted); margin-top: 3px; }
 .metrica.critica { border-color: var(--risco-line); background: var(--risco-soft); }
 .metrica.critica .valor { color: var(--risco); }
 
+@media (min-width: 40em) {
+  .metricas { gap: 12px; margin-bottom: 20px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+  .metrica { padding: 16px 18px; }
+  .metrica .valor { font-size: 29px; }
+  .metrica .rotulo { font-size: 12.5px; }
+}
+
 /* ------------------------------------------------------------------ filtros */
 
-.filtros { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 16px; }
+.filtros { display: grid; gap: 10px; margin-bottom: 14px; }
+.filtros-chips {
+  display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none;
+  margin: 0 calc(-1 * max(14px, env(safe-area-inset-left)));
+  padding: 0 max(14px, env(safe-area-inset-left));
+}
+.filtros-chips::-webkit-scrollbar { display: none; }
 .chip {
   background: var(--surface); border: 1px solid var(--line); color: var(--muted);
-  padding: 7px 14px; border-radius: 999px; font-size: 13.5px; font-weight: 600;
+  padding: 8px 14px; border-radius: 999px; font-size: 13.5px; font-weight: 600;
+  white-space: nowrap; flex: none; min-height: 40px;
 }
 .chip:hover { border-color: var(--line-forte); color: var(--text); }
 .chip[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-ink); }
-.filtros input[type="text"] { width: auto; flex: 1 1 200px; max-width: 280px; padding: 8px 12px; font-size: 14px; }
+.filtros input[type="text"] { width: 100%; }
 
-/* ------------------------------------------------------------------ tabela */
+@media (min-width: 52em) {
+  .filtros { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 16px; }
+  .filtros-chips { overflow: visible; margin: 0; padding: 0; flex-wrap: wrap; }
+  .filtros input[type="text"] { width: auto; flex: 1 1 200px; max-width: 280px; min-height: 40px; padding: 8px 12px; font-size: 14px; }
+}
+
+/* ------------------------------------------------------------------ lista */
 
 .lista { display: grid; gap: 10px; }
 
 .cartao-registro {
   width: 100%; text-align: left; background: var(--surface);
   border: 1px solid var(--line); border-left: 4px solid var(--line-forte);
-  border-radius: var(--r-md); padding: 15px 18px; display: grid; gap: 7px;
+  border-radius: var(--r-md); padding: 14px 15px; display: grid; gap: 7px;
+  -webkit-tap-highlight-color: transparent;
 }
 .cartao-registro:hover { border-color: var(--accent); box-shadow: var(--sombra); }
 .cartao-registro.critica { border-left-color: var(--risco); }
 .cartao-registro.alta { border-left-color: var(--alerta); }
-.cartao-registro .cabeca { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; }
+.cartao-registro .cabeca { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
 .cartao-registro .codigo {
   font-family: ui-monospace, Consolas, monospace; font-weight: 700;
-  font-size: 14.5px; letter-spacing: .04em;
+  font-size: 14px; letter-spacing: .04em;
 }
 .cartao-registro .resumo { font-size: 14px; color: var(--muted); }
 .cartao-registro .data { font-size: 12.5px; color: var(--muted); }
 
+@media (min-width: 40em) {
+  .cartao-registro { padding: 15px 18px; gap: 7px; }
+  .cartao-registro .codigo { font-size: 14.5px; }
+}
+
 .etiqueta {
-  font-size: 11.5px; font-weight: 700; padding: 3px 10px; border-radius: 999px;
-  text-transform: uppercase; letter-spacing: .06em; white-space: nowrap;
+  font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 999px;
+  text-transform: uppercase; letter-spacing: .05em; white-space: nowrap;
 }
 .et-critica { background: var(--risco-soft); color: var(--risco); border: 1px solid var(--risco-line); }
 .et-alta { background: var(--alerta-soft); color: var(--alerta-ink); border: 1px solid var(--alerta); }
@@ -96,7 +170,7 @@ body.painel { background: var(--bg-fundo); }
 .et-novo { background: var(--ok-soft); color: var(--ok); border: 1px solid var(--ok); }
 .et-anonimo { background: transparent; color: var(--muted); border: 1px dashed var(--line-forte); }
 
-.vazio { text-align: center; padding: 50px 20px; color: var(--muted); }
+.vazio { text-align: center; padding: 44px 20px; color: var(--muted); }
 
 /* ------------------------------------------------------------------ gaveta */
 
@@ -104,26 +178,46 @@ body.painel { background: var(--bg-fundo); }
   position: fixed; inset: 0; z-index: 50;
   background: rgba(4, 23, 32, .55); backdrop-filter: blur(2px);
 }
+/* No celular ocupa a tela inteira: é o conteúdo principal naquele momento. */
 .gaveta {
-  position: fixed; top: 0; right: 0; bottom: 0; z-index: 51;
-  width: min(620px, 100%); background: var(--surface);
-  border-left: 1px solid var(--line); box-shadow: var(--sombra-alta);
-  overflow-y: auto; padding: 24px 26px 60px;
+  position: fixed; inset: 0; z-index: 51;
+  width: 100%; background: var(--surface);
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
+  padding: calc(18px + env(safe-area-inset-top)) 16px
+           calc(40px + env(safe-area-inset-bottom));
 }
-.gaveta h2 { margin: 0; font-size: 19px; }
-.gaveta .fechar { position: absolute; top: 16px; right: 18px; }
+.gaveta h2 { margin: 0; font-size: 18px; padding-right: 48px; }
+.gaveta .fechar {
+  position: fixed; top: calc(12px + env(safe-area-inset-top)); right: 12px;
+  z-index: 2; background: var(--surface); width: 44px; height: 44px;
+}
 
-.dado { margin-top: 18px; }
+@media (min-width: 52em) {
+  .gaveta {
+    inset: 0 0 0 auto; width: min(620px, 100%);
+    border-left: 1px solid var(--line); box-shadow: var(--sombra-alta);
+    padding: 24px 26px 60px;
+  }
+  .gaveta h2 { font-size: 19px; }
+  .gaveta .fechar { position: absolute; top: 16px; right: 18px; }
+}
+
+.dado { margin-top: 16px; }
 .dado dt {
-  font-size: 11.5px; text-transform: uppercase; letter-spacing: .1em;
+  font-size: 11px; text-transform: uppercase; letter-spacing: .09em;
   color: var(--muted); font-weight: 700; margin-bottom: 5px;
 }
 .dado dd { margin: 0; font-size: 15px; }
 .relato {
   white-space: pre-wrap; background: var(--surface-2); border: 1px solid var(--line);
-  border-radius: var(--r-sm); padding: 15px 16px; font-size: 15px; line-height: 1.7;
+  border-radius: var(--r-sm); padding: 14px 15px; font-size: 15px; line-height: 1.7;
 }
-.grade-2 { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+
+/* Uma coluna no celular: duas deixariam os rótulos espremidos. */
+.grade-2 { display: grid; gap: 14px; grid-template-columns: 1fr; }
+@media (min-width: 30em) {
+  .grade-2 { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+}
 
 .nota {
   border: 1px solid var(--line); border-radius: var(--r-sm);
@@ -138,21 +232,41 @@ body.painel { background: var(--bg-fundo); }
   background: var(--risco-soft); border: 1px solid var(--risco-line); color: var(--risco);
 }
 
-/* ------------------------------------------------------------------ tabelas */
+/* ------------------------------------------------------------------ tabelas
+   No celular cada linha vira um cartão com os rótulos ao lado do valor.
+   Rolar uma tabela de lado com o polegar é ruim e esconde informação. */
 
-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); }
-th { font-size: 12px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); }
-tbody tr:hover { background: var(--surface-2); }
 .tabela-caixa {
   background: var(--surface); border: 1px solid var(--line);
-  border-radius: var(--r-md); overflow: auto;
+  border-radius: var(--r-md); overflow: hidden;
+}
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+
+thead { display: none; }
+tbody tr {
+  display: grid; gap: 4px;
+  padding: 14px 15px; border-bottom: 1px solid var(--line);
+}
+tbody tr:last-child { border-bottom: 0; }
+tbody td { display: flex; gap: 10px; padding: 0; border: 0; }
+tbody td::before {
+  content: attr(data-rotulo);
+  flex: 0 0 38%;
+  font-size: 11.5px; text-transform: uppercase; letter-spacing: .06em;
+  color: var(--muted); font-weight: 700; padding-top: 2px;
+}
+tbody td:empty { display: none; }
+tbody td .botao { margin-top: 6px; }
+
+@media (min-width: 52em) {
+  .tabela-caixa { overflow: auto; }
+  thead { display: table-header-group; }
+  tbody tr { display: table-row; padding: 0; }
+  tbody td, th { display: table-cell; text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+  th { font-size: 12px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); }
+  tbody td::before { content: none; }
+  tbody tr:hover { background: var(--surface-2); }
+  tbody td .botao { margin-top: 0; }
 }
 
-.botao.pequeno { padding: 7px 14px; font-size: 13.5px; }
-
-@media (max-width: 640px) {
-  .gaveta { width: 100%; padding: 20px 18px 60px; }
-  .topo-interno { padding: 10px 14px; }
-  .pagina { padding: 18px 14px 60px; }
-}
+.botao.pequeno { min-height: 40px; padding: 8px 14px; font-size: 13.5px; }

@@ -6,7 +6,12 @@
    O laranja NÃO é usado como ação principal: ele fica próximo demais do
    vermelho de emergência e disputaria atenção com o aviso CVV/SAMU.
    Aqui ele marca apenas "prioridade alta" no painel.
-   Tokens em :root, redefinidos para tema escuro.
+
+   ESCRITO MOBILE-FIRST: as regras fora de media query valem para o
+   telefone — que é como a maioria dos colaboradores vai abrir este canal,
+   muitas vezes em obra. As media queries só ACRESCENTAM o que telas
+   maiores permitem. Breakpoints em em, para respeitar o zoom do usuário:
+     40em ≈ 640px (tablet em pé)  ·  64em ≈ 1024px (desktop)
    ========================================================================== */
 
 :root {
@@ -128,6 +133,7 @@ body {
   font-size: 16px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 a { color: var(--focus); }
@@ -139,74 +145,80 @@ a { color: var(--focus); }
 }
 .pular:focus { left: 0; }
 
-.container { max-width: 780px; margin: 0 auto; padding: 0 16px; }
+/* Respeita as áreas do notch e das bordas arredondadas do aparelho. */
+.container {
+  width: 100%;
+  max-width: 780px;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
+}
 
 /* ---------------------------------------------------------- barra superior */
 
 .barra {
   position: sticky; top: 0; z-index: 30;
-  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  background: color-mix(in srgb, var(--surface) 90%, transparent);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
+  padding-top: env(safe-area-inset-top);
 }
 .barra .container {
-  display: flex; align-items: center; gap: 12px;
-  min-height: 56px; padding-top: 8px; padding-bottom: 8px;
+  display: flex; align-items: center; gap: 8px;
+  min-height: 52px; padding-top: 8px; padding-bottom: 8px;
 }
-.marca { display: flex; align-items: center; gap: 9px; font-weight: 700; font-size: 14px; letter-spacing: .01em; }
+.marca {
+  display: flex; align-items: center; gap: 8px; min-width: 0;
+  font-weight: 700; font-size: 13.5px; letter-spacing: .01em;
+}
 .marca .ponto {
-  width: 10px; height: 10px; border-radius: 50%; flex: none;
+  width: 9px; height: 9px; border-radius: 50%; flex: none;
   background: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft);
 }
-.barra .espaco { flex: 1; }
+.barra .espaco { flex: 1; min-width: 0; }
 
 .btn-socorro {
-  display: inline-flex; align-items: center; gap: 7px;
-  padding: 8px 15px; border-radius: 999px; text-decoration: none; font-size: 14px; font-weight: 650;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  /* É o atalho para quem está em crise: alvo maior que o mínimo. */
+  min-height: 44px; padding: 8px 14px; border-radius: 999px; flex: none;
+  text-decoration: none; font-size: 13.5px; font-weight: 650; text-align: center;
   background: var(--risco-soft); color: var(--risco); border: 1px solid var(--risco-line);
 }
 .btn-socorro:hover { border-color: var(--risco); }
 
 .btn-icone {
   background: transparent; border: 1px solid var(--line); color: var(--muted);
-  width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 15px; line-height: 1;
-  display: inline-flex; align-items: center; justify-content: center; flex: none;
+  width: 40px; height: 40px; border-radius: 50%; cursor: pointer;
+  font-size: 15px; line-height: 1; flex: none;
+  display: inline-flex; align-items: center; justify-content: center;
 }
 .btn-icone:hover { border-color: var(--accent); color: var(--text); }
+
+@media (min-width: 40em) {
+  .barra .container { min-height: 56px; gap: 12px; }
+  .marca { font-size: 14px; gap: 9px; }
+  .btn-socorro { font-size: 14px; padding: 8px 15px; }
+}
 
 /* ------------------------------------------------------------------- capa */
 
 .capa {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: var(--r-lg);
-  padding: 34px 28px;
-  margin-top: 26px;
+  border-radius: var(--r-md);
+  padding: 22px 18px;
+  margin-top: 16px;
   box-shadow: var(--sombra);
-  position: relative;
-  overflow: hidden;
-}
-/* Duas colunas: texto e logomarca. A marca some do fluxo em telas estreitas
-   e vai para o topo, antes do título. */
-.capa {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 24px 32px;
-  align-items: start;
+  gap: 18px;
 }
-/* A logomarca vem antes no HTML para ficar no topo em telas estreitas; no
-   grid de duas colunas ela é posicionada à direita de forma explícita. */
-.capa-texto { min-width: 0; grid-column: 1; grid-row: 1; }
 
+/* No telefone a marca vem primeiro, acima do título. */
 .capa-logo {
-  grid-column: 2;
-  grid-row: 1;
-  width: clamp(150px, 19vw, 215px);
-  height: auto;
-  justify-self: end;
-  /* Centralizada na altura do bloco de texto, não alinhada ao topo. */
-  align-self: center;
+  width: 150px; height: auto; justify-self: start;
+  grid-row: 1; grid-column: 1;
 }
+.capa-texto { min-width: 0; grid-row: 2; grid-column: 1; }
 
 /* A marca é azul escuro: sobre o fundo petróleo do tema escuro ela sumiria.
    O filtro a converte em branco sólido — a versão monocromática usual de
@@ -217,34 +229,47 @@ a { color: var(--focus); }
 }
 :root[data-tema="escuro"] .capa-logo { filter: brightness(0) invert(1); }
 
-@media (max-width: 660px) {
-  .capa { grid-template-columns: 1fr; gap: 18px; }
-  .capa-logo { grid-column: 1; grid-row: 1; justify-self: start; width: 160px; margin: 0; }
-  .capa-texto { grid-column: 1; grid-row: 2; }
-}
 .selo {
-  display: inline-block; font-size: 11.5px; font-weight: 700;
-  letter-spacing: .16em; text-transform: uppercase; color: var(--accent-ink);
-  background: var(--accent-soft); padding: 5px 12px; border-radius: 999px; margin-bottom: 16px;
+  display: inline-block; font-size: 11px; font-weight: 700;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--accent-ink);
+  background: var(--accent-soft); padding: 5px 11px; border-radius: 999px; margin-bottom: 14px;
 }
 h1 {
-  font-size: clamp(25px, 5.2vw, 36px); line-height: 1.18;
+  font-size: clamp(24px, 6.5vw, 36px); line-height: 1.2;
   margin: 0 0 14px; letter-spacing: -.02em; font-weight: 700; max-width: 18ch;
-  position: relative;
 }
-.capa .intro { font-size: 17px; margin: 0 0 12px; max-width: 58ch; position: relative; }
+.capa .intro { font-size: 16px; margin: 0 0 12px; max-width: 58ch; }
 .capa .intro:last-child { margin-bottom: 0; }
 .discreto { color: var(--muted); font-size: 14.5px; }
+
+@media (min-width: 40em) {
+  .capa {
+    border-radius: var(--r-lg);
+    padding: 34px 28px;
+    margin-top: 26px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 24px 32px;
+  }
+  /* Texto à esquerda, marca à direita e centralizada na altura do bloco. */
+  .capa-texto { grid-row: 1; grid-column: 1; }
+  .capa-logo {
+    grid-row: 1; grid-column: 2;
+    width: clamp(150px, 19vw, 215px);
+    justify-self: end; align-self: center;
+  }
+  .selo { font-size: 11.5px; letter-spacing: .16em; margin-bottom: 16px; }
+  .capa .intro { font-size: 17px; }
+}
 
 /* --------------------------------------------------------------- seções */
 
 .secao {
   background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md);
-  padding: 24px 22px; margin-top: 18px; box-shadow: var(--sombra);
+  padding: 20px 16px; margin-top: 14px; box-shadow: var(--sombra);
 }
 .secao > h2 {
-  display: flex; align-items: center; gap: 11px;
-  font-size: 17px; margin: 0; letter-spacing: -.01em; font-weight: 650;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 16.5px; margin: 0; letter-spacing: -.01em; font-weight: 650;
 }
 .passo {
   display: inline-flex; align-items: center; justify-content: center; flex: none;
@@ -253,39 +278,64 @@ h1 {
   font-size: 13px; font-weight: 700;
 }
 .apoio { color: var(--muted); font-size: 14.5px; margin: 8px 0 0; }
-.apoio + * { margin-top: 16px; }
+.apoio + * { margin-top: 14px; }
+
+@media (min-width: 40em) {
+  .secao { padding: 24px 22px; margin-top: 18px; }
+  .secao > h2 { font-size: 17px; gap: 11px; }
+  .apoio + * { margin-top: 16px; }
+}
 
 /* ---------------------------------------------------------------- campos */
 
 fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
 legend { padding: 0; width: 100%; }
 
-.opcoes { display: grid; gap: 9px; margin-top: 16px; }
-.opcoes.colunas { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+.opcoes { display: grid; gap: 8px; margin-top: 14px; }
 
+/* Alvo de toque confortável: 48px de altura mínima. */
 .opcao {
   display: flex; gap: 12px; align-items: flex-start;
-  padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--r-sm);
+  min-height: 48px;
+  padding: 13px 14px; border: 1px solid var(--line); border-radius: var(--r-sm);
   background: var(--surface-2); cursor: pointer; font-size: 15px;
   transition: border-color .15s ease, background .15s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 .opcao:hover { border-color: var(--line-forte); }
 .opcao:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
 .opcao:has(input:focus-visible) { outline: 2px solid var(--focus); outline-offset: 2px; }
-.opcao input { margin: 4px 0 0; width: 18px; height: 18px; accent-color: var(--accent-forte); flex: none; }
+.opcao input { margin: 2px 0 0; width: 20px; height: 20px; accent-color: var(--accent-forte); flex: none; }
 .opcao.sensivel:has(input:checked) { border-color: var(--risco); background: var(--risco-soft); }
 
-.campo { margin-top: 16px; }
+@media (min-width: 40em) {
+  .opcoes { gap: 9px; margin-top: 16px; }
+  .opcoes.colunas { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  .opcao { min-height: 0; padding: 12px 14px; }
+  .opcao input { margin-top: 4px; width: 18px; height: 18px; }
+}
+
+.campo { margin-top: 14px; }
 .campo > label { display: block; font-size: 14px; font-weight: 650; margin-bottom: 7px; }
 .campo .opcional { font-weight: 400; color: var(--muted); }
 
 input[type="text"], input[type="tel"], input[type="email"], input[type="password"], textarea, select {
-  width: 100%; padding: 12px 13px; font: inherit; color: var(--text);
+  width: 100%;
+  padding: 13px;
+  font: inherit;
+  font-size: 16px;          /* abaixo de 16px o iOS dá zoom ao focar o campo */
+  min-height: 48px;
+  color: var(--text);
   background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--r-sm);
 }
 input:hover, textarea:hover, select:hover { border-color: var(--line-forte); }
-textarea { min-height: 170px; resize: vertical; line-height: 1.65; }
+textarea { min-height: 150px; resize: vertical; line-height: 1.65; }
 ::placeholder { color: var(--muted); opacity: .7; }
+
+@media (min-width: 40em) {
+  .campo { margin-top: 16px; }
+  textarea { min-height: 170px; }
+}
 
 [hidden] { display: none !important; }
 .visualmente-oculto {
@@ -296,21 +346,34 @@ textarea { min-height: 170px; resize: vertical; line-height: 1.65; }
 /* ------------------------------------------------------------ risco / SOS */
 
 .risco {
-  margin-top: 18px; padding: 18px 20px; border-radius: var(--r-md);
+  margin-top: 16px; padding: 16px; border-radius: var(--r-md);
   background: var(--risco-soft); border: 1px solid var(--risco-line);
 }
-.risco h3 { margin: 0 0 7px; font-size: 15.5px; color: var(--risco); font-weight: 700; }
+.risco h3 { margin: 0 0 7px; font-size: 15px; color: var(--risco); font-weight: 700; }
 .risco p { margin: 0 0 12px; font-size: 14.5px; }
 .risco p:last-child { margin-bottom: 0; }
 
-.linhas { display: flex; flex-wrap: wrap; gap: 9px; }
+/* Telefones de emergência: um por linha e bem grandes no celular. Quem
+   precisa disso pode estar abalado; não é hora de exigir mira. */
+.linhas { display: grid; gap: 8px; }
 .linha {
-  display: inline-flex; align-items: baseline; gap: 8px; text-decoration: none;
-  padding: 10px 16px; border-radius: 999px; font-size: 14.5px; font-weight: 650;
+  display: flex; align-items: center; gap: 8px; text-decoration: none;
+  min-height: 52px; padding: 12px 18px; border-radius: var(--r-sm);
+  font-size: 15px; font-weight: 650;
   background: var(--surface); border: 1px solid var(--risco-line); color: var(--text);
 }
 .linha:hover { border-color: var(--risco); }
-.linha b { font-size: 18px; color: var(--risco); }
+.linha b { font-size: 20px; color: var(--risco); }
+
+@media (min-width: 40em) {
+  .risco { padding: 18px 20px; }
+  .linhas { display: flex; flex-wrap: wrap; gap: 9px; }
+  .linha {
+    min-height: 0; padding: 10px 16px; border-radius: 999px;
+    font-size: 14.5px; align-items: baseline;
+  }
+  .linha b { font-size: 18px; }
+}
 
 /* ---------------------------------------------------------------- botões */
 
@@ -318,8 +381,10 @@ button { font: inherit; cursor: pointer; }
 
 .botao {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  font-weight: 650; padding: 13px 24px; border-radius: var(--r-sm);
-  border: 1px solid transparent; text-decoration: none; font-size: 15.5px;
+  min-height: 48px;
+  font-weight: 650; padding: 13px 22px; border-radius: var(--r-sm);
+  border: 1px solid transparent; text-decoration: none; font-size: 16px;
+  -webkit-tap-highlight-color: transparent;
 }
 .botao.primario { background: var(--accent-forte); color: var(--sobre-accent); }
 .botao.primario:hover { filter: brightness(1.08); }
@@ -327,15 +392,32 @@ button { font: inherit; cursor: pointer; }
 .botao.secundario:hover { border-color: var(--accent); }
 .botao[disabled] { opacity: .55; cursor: progress; }
 
+/* Barra de envio: no celular ocupa o mínimo e respeita a barra de gestos. */
 .acoes {
-  position: sticky; bottom: 0; z-index: 20; margin-top: 22px;
-  padding: 16px; border-radius: var(--r-md);
-  background: color-mix(in srgb, var(--surface) 94%, transparent);
+  position: sticky; bottom: 0; z-index: 20; margin-top: 18px;
+  padding: 12px 14px;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom));
+  border-radius: var(--r-md) var(--r-md) 0 0;
+  background: color-mix(in srgb, var(--surface) 96%, transparent);
   backdrop-filter: blur(10px);
   border: 1px solid var(--line); box-shadow: var(--sombra-alta);
-  display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+  display: grid; gap: 8px;
 }
-.acoes .aviso { flex: 1 1 240px; font-size: 13.5px; color: var(--muted); margin: 0; }
+.acoes .botao { width: 100%; }
+
+.aviso-envio {
+  font-size: 13px; line-height: 1.5; color: var(--muted);
+  margin: 16px 2px 0;
+}
+
+@media (min-width: 40em) {
+  .acoes {
+    margin-top: 22px; padding: 16px; border-radius: var(--r-md);
+    display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+  }
+  .acoes .botao { width: auto; }
+  .aviso-envio { font-size: 13.5px; margin-top: 18px; }
+}
 
 .erro {
   margin-top: 14px; padding: 12px 15px; border-radius: var(--r-sm); font-size: 14.5px;
@@ -347,14 +429,20 @@ button { font: inherit; cursor: pointer; }
 .info p { margin: 0 0 11px; font-size: 15px; }
 .info p:last-child { margin-bottom: 0; }
 .destaque {
-  margin-top: 16px; padding: 14px 18px; border-left: 3px solid var(--accent);
+  margin-top: 16px; padding: 13px 15px; border-left: 3px solid var(--accent);
   background: var(--accent-soft); border-radius: 0 var(--r-sm) var(--r-sm) 0;
   font-weight: 650; font-size: 15px;
+}
+@media (min-width: 40em) {
+  .destaque { padding: 14px 18px; }
 }
 
 /* ----------------------------------------------------------------- rodapé */
 
-.rodape { text-align: center; color: var(--muted); font-size: 13.5px; padding: 34px 16px 60px; }
+.rodape {
+  text-align: center; color: var(--muted); font-size: 13.5px;
+  padding: 28px 16px calc(40px + env(safe-area-inset-bottom));
+}
 .rodape .coracao { font-size: 16.5px; color: var(--text); font-weight: 650; margin-bottom: 6px; }
 .rodape .empresa {
   margin-top: 20px; font-size: 11.5px; letter-spacing: .14em;
