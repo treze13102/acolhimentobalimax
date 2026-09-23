@@ -11,7 +11,8 @@
     "dev": "node --watch dev.js",
     "start": "node dev.js",
     "chave": "node scripts/gerar-chave.js",
-    "admin": "node scripts/criar-admin.js"
+    "admin": "node scripts/criar-admin.js",
+    "exportar": "node scripts/exportar.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.0"
