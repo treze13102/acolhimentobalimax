@@ -26,10 +26,15 @@ function tokenDe(req) {
   return bruto.startsWith('Bearer ') ? bruto.slice(7).trim() : '';
 }
 
-/** Retorna o usuário autenticado e ativo, ou null. Não lança. */
-export async function usuarioAtual(req) {
+/**
+ * Autentica e diz o motivo quando recusa.
+ * Distinguir "sem perfil" de "token inválido" importa: criar a conta direto no
+ * painel do Supabase cria o login mas não o perfil, e sem essa distinção a
+ * pessoa recebia "sessão expirada" — mensagem que manda investigar o lado errado.
+ */
+export async function autenticarRequisicao(req) {
   const token = tokenDe(req);
-  if (!token) return null;
+  if (!token) return { usuario: null, motivo: 'sem_token' };
 
   let usuarioId;
   const emCache = cacheToken.get(token);
@@ -40,7 +45,7 @@ export async function usuarioAtual(req) {
     const { data, error } = await bd.auth.getUser(token);
     if (error || !data?.user) {
       cacheToken.delete(token);
-      return null;
+      return { usuario: null, motivo: 'token_invalido' };
     }
     usuarioId = data.user.id;
     if (cacheToken.size > 200) cacheToken.clear();
@@ -55,24 +60,52 @@ export async function usuarioAtual(req) {
     .maybeSingle();
 
   // Sem perfil, ou desativado, não entra — mesmo com token ainda válido.
-  if (!perfil || !perfil.ativo) {
+  if (!perfil) {
     cacheToken.delete(token);
-    return null;
+    return { usuario: null, motivo: 'sem_perfil' };
+  }
+  if (!perfil.ativo) {
+    cacheToken.delete(token);
+    return { usuario: null, motivo: 'desativado' };
   }
 
   return {
-    id: perfil.id,
-    nome: perfil.nome,
-    email: perfil.email,
-    papel: perfil.papel,
-    trocar_senha: perfil.trocar_senha,
+    usuario: {
+      id: perfil.id,
+      nome: perfil.nome,
+      email: perfil.email,
+      papel: perfil.papel,
+      trocar_senha: perfil.trocar_senha,
+    },
+    motivo: null,
   };
+}
+
+export const MENSAGENS_AUTH = {
+  sem_token: 'Sessão expirada. Entre novamente.',
+  token_invalido: 'Sessão expirada. Entre novamente.',
+  desativado: 'Seu acesso ao painel foi desativado. Procure o administrador.',
+  sem_perfil:
+    'Sua conta existe, mas ainda não tem acesso ao painel. ' +
+    'Peça a um administrador para criar seu acesso em Equipe › Adicionar. ' +
+    'Contas criadas direto no Supabase não recebem acesso automaticamente.',
+};
+
+/** Retorna o usuário autenticado e ativo, ou null. Não lança. */
+export async function usuarioAtual(req) {
+  const { usuario } = await autenticarRequisicao(req);
+  return usuario;
 }
 
 /** Exige sessão válida; com `papel`, exige também aquele perfil. */
 export async function exigirLogin(req, { papel = null } = {}) {
-  const usuario = await usuarioAtual(req);
-  if (!usuario) throw new ErroHttp(401, 'Sessão expirada. Entre novamente.');
+  const { usuario, motivo } = await autenticarRequisicao(req);
+  if (!usuario) {
+    // 403 quando a identidade é válida mas falta autorização: o navegador não
+    // deve tratar como "faça login de novo", porque logar de novo não resolve.
+    const status = motivo === 'sem_perfil' || motivo === 'desativado' ? 403 : 401;
+    throw new ErroHttp(status, MENSAGENS_AUTH[motivo] || MENSAGENS_AUTH.sem_token);
+  }
 
   // Com senha provisória o painel fica bloqueado até a troca. É um empurrão
   // de processo, não uma barreira de segurança: quem já está autenticado

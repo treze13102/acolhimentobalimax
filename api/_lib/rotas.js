@@ -1,7 +1,13 @@
 import { bd, conferir, auditar, limitar } from './dados.js';
 import { cifrar, decifrar, gerarProtocolo, senhaProvisoria } from './cripto.js';
 import { criarRoteador, json, lerJson, ErroHttp, ipHashDe, ipDe } from './http.js';
-import { exigirLogin, usuarioAtual, registrarAcesso, marcarSenhaTrocada } from './auth.js';
+import {
+  exigirLogin,
+  autenticarRequisicao,
+  MENSAGENS_AUTH,
+  registrarAcesso,
+  marcarSenhaTrocada,
+} from './auth.js';
 import { config } from './config.js';
 import {
   MOTIVOS,
@@ -147,8 +153,11 @@ rotas.get('/api/protocolo/:codigo', async (req, res, { params }) => {
 ================================================================== */
 
 rotas.get('/api/eu', async (req, res) => {
-  const usuario = await usuarioAtual(req);
-  if (!usuario) throw new ErroHttp(401, 'Não autenticado.');
+  const { usuario, motivo } = await autenticarRequisicao(req);
+  if (!usuario) {
+    const status = motivo === 'sem_perfil' || motivo === 'desativado' ? 403 : 401;
+    throw new ErroHttp(status, MENSAGENS_AUTH[motivo] || 'Não autenticado.');
+  }
   await registrarAcesso(usuario.id);
   await auditar({ usuarioId: usuario.id, acao: 'login', ipHash: ipHashDe(req) });
   json(res, 200, { usuario });
@@ -156,7 +165,7 @@ rotas.get('/api/eu', async (req, res) => {
 
 // O painel chama após trocar a senha direto no Supabase Auth.
 rotas.post('/api/senha-trocada', async (req, res) => {
-  const usuario = await usuarioAtual(req);
+  const { usuario } = await autenticarRequisicao(req);
   if (!usuario) throw new ErroHttp(401, 'Não autenticado.');
   await marcarSenhaTrocada(usuario.id);
   await auditar({ usuarioId: usuario.id, acao: 'senha_alterada', ipHash: ipHashDe(req) });

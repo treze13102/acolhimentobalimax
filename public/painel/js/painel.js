@@ -114,7 +114,13 @@
         $('senha').value = '';
         return entrarNoPainel();
       })
-      .catch(function (erro) { erroEm('erro-login', erro.message); })
+      .catch(function (erro) {
+        // A senha pode estar certa e o acesso ainda ser negado (conta sem
+        // perfil, ou desativada). Descarta a sessão para não ficar num meio
+        // termo em que o token existe mas nada funciona.
+        Auth.sair().catch(function () {});
+        erroEm('erro-login', erro.message);
+      })
       .then(function () { botao.disabled = false; });
   });
 

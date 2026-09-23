@@ -117,6 +117,13 @@ com ela junto o backup é o vazamento inteiro.
 **Novos acessos.** Painel › Equipe › Adicionar. A senha provisória aparece uma vez;
 entregue pessoalmente. A pessoa é obrigada a trocá-la no primeiro acesso.
 
+> **Não crie usuários pelo painel do Supabase.** O acesso exige duas coisas: a conta
+> no Supabase Auth (quem a pessoa é) e uma linha em `perfis` (se ela pode entrar e
+> com qual papel). O Supabase cria só a primeira, então a pessoa consegue fazer login
+> e mesmo assim é recusada. Use o painel do canal, ou `npm run admin -- "Nome" email`
+> — o script detecta uma conta já existente e cria apenas o perfil que falta, sem
+> tocar na senha.
+
 **Saída de alguém.** Painel › Equipe › Desativar. Corta o acesso na hora — o
 servidor confere o perfil a cada requisição e encerra as sessões abertas.
 
