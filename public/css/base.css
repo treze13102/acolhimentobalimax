@@ -204,7 +204,8 @@ a { color: var(--focus); }
   width: clamp(150px, 19vw, 215px);
   height: auto;
   justify-self: end;
-  margin-top: 4px;
+  /* Centralizada na altura do bloco de texto, não alinhada ao topo. */
+  align-self: center;
 }
 
 /* A marca é azul escuro: sobre o fundo petróleo do tema escuro ela sumiria.
