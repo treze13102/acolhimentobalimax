@@ -63,8 +63,14 @@ create table if not exists public.notas (
   usuario_id    uuid references public.perfis(id) on delete set null,
   texto         text not null,                           -- CIFRADO
   visivel_autor boolean not null default false,          -- true = a pessoa lê pelo protocolo
+  -- true = escrita pela própria pessoa pelo protocolo (usuario_id fica nulo).
+  de_autor      boolean not null default false,
   criado_em     timestamptz not null default now()
 );
+
+-- Migração para bancos criados antes da resposta do autor.
+alter table public.notas
+  add column if not exists de_autor boolean not null default false;
 
 create index if not exists idx_notas_registro on public.notas (registro_id, criado_em);
 

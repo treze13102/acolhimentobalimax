@@ -444,11 +444,14 @@
       hist.appendChild(el('dt', null, 'Histórico de acolhimento'));
       if (!dados.notas.length) hist.appendChild(el('p', 'apoio', 'Nenhuma anotação ainda.'));
       dados.notas.forEach(function (n) {
-        var nota = el('div', 'nota' + (n.visivel_autor ? ' publica' : ''));
+        var nota = el('div', 'nota' +
+          (n.de_autor ? ' do-autor' : n.visivel_autor ? ' publica' : ''));
         nota.appendChild(
           el('div', 'meta',
-            (n.autor || 'Usuário removido') + ' · ' + dataBR(n.criado_em) +
-            (n.visivel_autor ? ' · visível para quem enviou' : ' · interna'))
+            n.de_autor
+              ? 'Resposta de quem enviou o contato · ' + dataBR(n.criado_em)
+              : (n.autor || 'Usuário removido') + ' · ' + dataBR(n.criado_em) +
+                (n.visivel_autor ? ' · visível para quem enviou' : ' · interna'))
         );
         nota.appendChild(el('div', 'corpo', n.texto));
         hist.appendChild(nota);

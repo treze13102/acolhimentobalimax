@@ -51,6 +51,21 @@
     <div class="destaque" id="sem-mensagens" hidden>
       Ainda não há mensagens da equipe. Assim que houver retorno, ele aparecerá aqui.
     </div>
+
+    <form id="responder" hidden style="margin-top:22px">
+      <div class="campo">
+        <label for="resposta">Responder à equipe</label>
+        <p class="apoio" style="margin:0 0 8px">
+          Você pode escrever a qualquer momento, sem se identificar. A equipe lê pelo mesmo protocolo.
+        </p>
+        <textarea id="resposta" name="resposta" rows="5" required
+                  placeholder="Escreva aqui o que quiser acrescentar…"></textarea>
+      </div>
+      <div style="margin-top:14px">
+        <button class="botao primario" type="submit" id="btn-responder">Enviar mensagem</button>
+      </div>
+      <div class="erro" id="erro-resposta" hidden role="alert"></div>
+    </form>
   </section>
 
   <section class="secao info">

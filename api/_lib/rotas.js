@@ -132,7 +132,7 @@ rotas.get('/api/protocolo/:codigo', async (req, res, { params }) => {
   const notas = conferir(
     await bd
       .from('notas')
-      .select('texto, criado_em')
+      .select('texto, criado_em, de_autor')
       .eq('registro_id', registro.id)
       .eq('visivel_autor', true)
       .order('criado_em'),
@@ -144,8 +144,51 @@ rotas.get('/api/protocolo/:codigo', async (req, res, { params }) => {
     criado_em: registro.criado_em,
     atualizado_em: registro.atualizado_em,
     status: registro.status,
-    mensagens: notas.map((n) => ({ texto: decifrar(n.texto), criado_em: n.criado_em })),
+    mensagens: notas.map((n) => ({
+      texto: decifrar(n.texto),
+      criado_em: n.criado_em,
+      de_autor: n.de_autor === true,
+    })),
   });
+});
+
+// Resposta da própria pessoa, pelo protocolo. Sem login: o código é a chave.
+rotas.post('/api/protocolo/:codigo/mensagens', async (req, res, { params }) => {
+  if (!(await limitar(`resposta:${ipDe(req)}`, 10, 600))) {
+    throw new ErroHttp(429, 'Muitas mensagens enviadas. Aguarde alguns minutos ou ligue 188.');
+  }
+
+  const codigo = String(params.codigo).toUpperCase().trim();
+  const corpo = await lerJson(req);
+  const limpo = texto(corpo.texto, 10000);
+  if (!limpo) throw new ErroHttp(400, 'Escreva a sua mensagem.');
+
+  const { data: registro } = await bd
+    .from('registros')
+    .select('id, protocolo')
+    .eq('protocolo', codigo)
+    .maybeSingle();
+  if (!registro) throw new ErroHttp(404, 'Protocolo não encontrado. Confira o código digitado.');
+
+  conferir(
+    await bd.from('notas').insert({
+      registro_id: registro.id,
+      usuario_id: null,
+      texto: cifrar(limpo),
+      visivel_autor: true, // a pessoa precisa continuar vendo o que escreveu
+      de_autor: true,
+    }),
+    'inserir resposta do autor'
+  );
+  await bd.from('registros').update({ atualizado_em: new Date().toISOString() }).eq('id', registro.id);
+
+  await auditar({
+    acao: 'resposta_do_autor',
+    registroId: registro.id,
+    detalhe: registro.protocolo,
+    ipHash: ipHashDe(req),
+  });
+  json(res, 201, { ok: true });
 });
 
 /* ==================================================================
@@ -270,7 +313,7 @@ rotas.get('/api/admin/registros/:id', async (req, res, { params }) => {
   const notas = conferir(
     await bd
       .from('notas')
-      .select('id, texto, visivel_autor, criado_em, usuario_id')
+      .select('id, texto, visivel_autor, de_autor, criado_em, usuario_id')
       .eq('registro_id', id)
       .order('criado_em'),
     'notas'
@@ -295,8 +338,11 @@ rotas.get('/api/admin/registros/:id', async (req, res, { params }) => {
       id: n.id,
       texto: decifrar(n.texto),
       visivel_autor: n.visivel_autor,
+      de_autor: n.de_autor === true,
       criado_em: n.criado_em,
-      autor: n.usuario_id ? nomePorId.get(n.usuario_id) || null : null,
+      autor: n.de_autor
+        ? 'Quem enviou o contato'
+        : n.usuario_id ? nomePorId.get(n.usuario_id) || null : null,
     })),
   });
 });

@@ -224,6 +224,7 @@ body.painel { background: var(--bg-fundo); }
   padding: 12px 14px; margin-top: 10px; background: var(--surface-2);
 }
 .nota.publica { border-color: var(--accent); background: var(--accent-soft); }
+.nota.do-autor { border-style: dashed; border-color: var(--accent); }
 .nota .meta { font-size: 12px; color: var(--muted); margin-bottom: 5px; }
 .nota .corpo { white-space: pre-wrap; font-size: 14.5px; }
 
