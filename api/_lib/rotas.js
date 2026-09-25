@@ -373,6 +373,11 @@ rotas.patch('/api/admin/registros/:id', async (req, res, { params }) => {
     descricao.push(`prioridade=${corpo.prioridade}`);
   }
   if (corpo.responsavel_id !== undefined) {
+    // O id do perfil é uuid. Recusamos qualquer outro tipo em vez de tratar
+    // como "sem responsável": um envio errado apagaria a atribuição em silêncio.
+    if (corpo.responsavel_id !== null && typeof corpo.responsavel_id !== 'string') {
+      throw new ErroHttp(400, 'Responsável inválido.');
+    }
     const alvo = corpo.responsavel_id || null;
     if (alvo) {
       const { data: perfil } = await bd

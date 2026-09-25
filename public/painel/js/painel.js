@@ -365,7 +365,8 @@
       var etiquetas = el('div', 'cabeca');
       etiquetas.style.marginTop = '12px';
       etiquetas.appendChild(el('span', 'etiqueta et-' + r.prioridade, 'Prioridade ' + PRIORIDADES[r.prioridade]));
-      etiquetas.appendChild(el('span', 'etiqueta et-status', STATUS[r.status]));
+      var etiquetaStatus = el('span', 'etiqueta et-status', STATUS[r.status]);
+      etiquetas.appendChild(etiquetaStatus);
       g.appendChild(etiquetas);
 
       if (r.prioridade === 'critica') {
@@ -415,8 +416,17 @@
         if (chave === r.status) op.selected = true;
         selStatus.appendChild(op);
       });
+      var statusAnterior = r.status;
       selStatus.addEventListener('change', function () {
-        atualizar(id, { status: selStatus.value });
+        var escolhido = selStatus.value;
+        atualizar(id, { status: escolhido }, selStatus, function (ok) {
+          if (ok) {
+            statusAnterior = escolhido;
+            etiquetaStatus.textContent = STATUS[escolhido];
+          } else {
+            selStatus.value = statusAnterior;
+          }
+        });
       });
 
       var selResp = el('select');
@@ -426,11 +436,19 @@
       estado.equipe.filter(function (u) { return u.ativo; }).forEach(function (u) {
         var op = el('option', null, u.nome);
         op.value = String(u.id);
-        if (u.id === r.responsavel_id) op.selected = true;
+        if (String(u.id) === String(r.responsavel_id)) op.selected = true;
         selResp.appendChild(op);
       });
+
+      // O id do perfil é um uuid: enviar como texto. Converter para número
+      // produzia NaN, que vira null no JSON e apagava o responsável.
+      var respAnterior = r.responsavel_id ? String(r.responsavel_id) : '';
       selResp.addEventListener('change', function () {
-        atualizar(id, { responsavel_id: selResp.value ? Number(selResp.value) : null });
+        var escolhido = selResp.value;
+        atualizar(id, { responsavel_id: escolhido || null }, selResp, function (ok) {
+          if (ok) respAnterior = escolhido;
+          else selResp.value = respAnterior;
+        });
       });
 
       var c1 = el('div'); c1.appendChild(el('label', null, 'Status')); c1.appendChild(selStatus);
@@ -498,10 +516,19 @@
     }).catch(function (erro) { alert(erro.message); });
   }
 
-  function atualizar(id, mudanca) {
-    api('/api/admin/registros/' + id, { method: 'PATCH', corpo: mudanca })
-      .then(function () { carregarRegistros(); carregarMetricas(); })
-      .catch(function (erro) { alert(erro.message); });
+  function atualizar(id, mudanca, campo, depois) {
+    if (campo) campo.disabled = true;
+    return api('/api/admin/registros/' + id, { method: 'PATCH', corpo: mudanca })
+      .then(function () {
+        carregarRegistros();
+        carregarMetricas();
+        if (depois) depois(true);
+      })
+      .catch(function (erro) {
+        alert(erro.message);
+        if (depois) depois(false);
+      })
+      .then(function () { if (campo) campo.disabled = false; });
   }
 
   /* ----------------------------------------------------------------- equipe */
